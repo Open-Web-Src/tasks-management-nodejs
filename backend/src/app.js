@@ -7,8 +7,8 @@ const Router = require('./routes');
 
 const app = new Application();
 
-const {MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_DATABASE} = process.env;
-app.registerDatabase(`mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}?authSource=admin`);
+const {MONGO_PREFIX, MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_DATABASE} = process.env;
+app.registerDatabase(`${MONGO_PREFIX}://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}?authSource=admin`);
 
 app.registerHealthCheck();
 

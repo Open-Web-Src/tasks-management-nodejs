@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: task_app
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: 
+      - ./env/backend.env
+    volumes:
+      - ./backend:/app
+      - task_app_backend_node_modules:/app/node_modules
+    ports:
+      - 8000:80
+    networks: 
+      - task_app_network
+    depends_on: 
+      - database
+  database:
+    container_name: mongo
+    image: mongo
+    restart: always
+    volumes: 
+      - ./database:/data/db
+    ports: 
+      - 27017:27017
+    networks: 
+      - task_app_network
+    env_file: 
+      - ./env/database.env
+
+volumes: 
+  task_app_backend_node_modules:
+networks: 
+  task_app_network:

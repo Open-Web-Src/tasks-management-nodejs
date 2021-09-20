@@ -23,67 +23,99 @@ const AuthenticateMiddleware = require("./business/users/middlewares/authenticat
 const multer = require("multer");
 const SendGridMail = require("./core/emails/sendgrid_mail");
 
+module.exports = class Router {
+    constructor() {
+        this.initialRepository();
+        this.initialServices();
+        this.initialRouters();
+    }
 
-module.exports = () => {
-    // Instantiate business databases
-    const userDatabase = new UserDatabase();
-    const taskDatabase = new TaskDatabase();
+    initialRepository = () => {
+        const userDatabase = new UserDatabase();
+        const taskDatabase = new TaskDatabase();
 
-    // Instantiate repositories and inject respective databases
-    const userRepository = new Repository(userDatabase);
-    const taskRepository = new Repository(taskDatabase);
+        this.repositories = {};
 
-    // Instantiate services
-    const sendGridMail = new SendGridMail();
+        this.repositories.users = new Repository(userDatabase);
+        this.repositories.tasks = new Repository(taskDatabase);
+    }
 
-    // Instantiate use-cases and inject dependencies including repositories, services
-    // Instantiate controllers and inject respective use-cases
-    const userController = new UserController(
-        CreateUser(userRepository),
-        UpdateUserById(userRepository),
-        DeleteUserById(userRepository, taskRepository),
-        GetUserById(userRepository),
-        Login(userRepository),
-        Logout(userRepository),
-        UpdateUserAvatar(userRepository),
-        SendCRMMail(sendGridMail)
-    );
-    const taskController = new TaskController(
-        GetManyTasks(taskRepository),
-        CreateTask(taskRepository),
-        GetTaskById(taskRepository),
-        UpdateTaskById(taskRepository),
-        DeleteTaskById(taskRepository)
-    );
+    initialServices = () => {
+        this.services = {};
 
-    // Instantiate middlewares 
-    const authentication = new AuthenticateMiddleware(userRepository);
-    const uploadUser = multer({
-        limits: {
-            fileSize: 50000000
-        },
-        fileFilter(req, file, cb) {
-            if(file.originalname.match(/\.(exe|sh)$/)) 
-                return cb(new Error("This extension is not allow"));
+        this.services.sendGridMail = new SendGridMail();
+    }
 
-            cb(undefined, true)
+    initialRouters = () => {
+        const controllers = this.buildupControllers();
+
+        const middlewares = this.buildupMiddlewares();
+
+        this.routers = {};
+
+        this.routers.users = new UserRouter(
+            controllers.users, 
+            middlewares.authentication, 
+            middlewares.upload
+        );
+        this.routers.tasks = new TaskRouter(
+            controllers.tasks, 
+            middlewares.authentication
+        );
+    }
+
+    buildupControllers = () => {
+        const users = new UserController(
+            CreateUser(this.repositories.users),
+            UpdateUserById(this.repositories.users),
+            DeleteUserById(this.repositories.users, this.repositories.tasks),
+            GetUserById(this.repositories.users),
+            Login(this.repositories.users),
+            Logout(this.repositories.users),
+            UpdateUserAvatar(this.repositories.users),
+            SendCRMMail(this.services.sendGridMail)
+        );
+
+        const tasks = new TaskController(
+            GetManyTasks(this.repositories.tasks),
+            CreateTask(this.repositories.tasks),
+            GetTaskById(this.repositories.tasks),
+            UpdateTaskById(this.repositories.tasks),
+            DeleteTaskById(this.repositories.tasks)
+        );
+
+        return {
+            users,
+            tasks
         }
-    });
+    }
 
-    // Instantiate routers and inject respective controllers and middlewares
-    const router = express.Router();
-    const userRouter = new UserRouter(
-        userController, 
-        authentication, 
-        uploadUser
-    );
-    const taskRouter = new TaskRouter(
-        taskController, 
-        authentication
-    );
+    buildupMiddlewares = () => {
+        const authentication = new AuthenticateMiddleware(this.repositories.users);
+        const upload = multer({
+            limits: {
+                fileSize: 50000000
+            },
+            fileFilter(req, file, cb) {
+                if(file.originalname.match(/\.(exe|sh)$/)) 
+                    return cb(new Error("This extension is not allow"));
 
-    router.use("/users", userRouter.routes());
-    router.use("/tasks", taskRouter.routes());
+                cb(undefined, true)
+            }
+        });
 
-    return router;
+        return {
+            authentication,
+            upload
+        }
+    }
+
+    routes = () => {
+        const router = express.Router();
+
+        router.use("/users", this.routers.users.routes());
+        router.use("/tasks", this.routers.tasks.routes());
+
+        return router;
+    }
 }

@@ -7,7 +7,7 @@ module.exports = class BaseSchema extends mongoose.Schema {
 
       this.enableTimeStamp();
       this.enableSoftDelete();
-      this.enableNonDeletedSelector();
+      this.enableNonDeletedBasedSelection();
     }
 
     enableTimeStamp() {
@@ -31,7 +31,7 @@ module.exports = class BaseSchema extends mongoose.Schema {
       });
     }
 
-    enableNonDeletedSelector(){
+    enableNonDeletedBasedSelection(){
       //Only get non-deleted documets, filter it by isDeleted = false
       const middlewareTypes = ['find', 'findOne', 'updateOne', 'updateMany'];
       middlewareTypes.forEach(type => {
@@ -41,4 +41,4 @@ module.exports = class BaseSchema extends mongoose.Schema {
         });
       })
     }
-}
+  }

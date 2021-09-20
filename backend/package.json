@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/app.js -e js,hbs,css"
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js -e js,hbs,css",
+    "test": "env-cmd -f ./env/backend.test.env jest --watchAll --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.4.6",
@@ -21,5 +26,10 @@
     "validator": "^13.6.0"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "env-cmd": "^10.1.0",
+    "jest": "^27.2.0",
+    "supertest": "^6.1.6"
+  }
 }

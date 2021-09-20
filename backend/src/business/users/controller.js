@@ -95,7 +95,7 @@ module.exports = class UserController {
 
     uploadAvatar = async (req, res, next) => {
         try{
-            this.updateUserAvatarCase.upload(req.user.id, req.file.buffer);
+            await this.updateUserAvatarCase.upload(req.user.id, req.file.buffer);
 
             res.status(200).json("Upload success");
         } catch(err) {
@@ -106,7 +106,7 @@ module.exports = class UserController {
 
     deleteAvatar = async (req, res, next) => {
         try{
-            this.updateUserAvatarCase.remove(req.user.id);
+            await this.updateUserAvatarCase.remove(req.user.id);
 
             res.status(200).json("Delete success");
         } catch(err) {

@@ -7,12 +7,12 @@ module.exports = class Repository {
 
     /**
      * Saving some specific field in updated entity
-     * @param {*} entity 
+     * @param {*} entityModel 
      * @returns Promise of saved entity
      */
-    save = entity => {
+    save = entityModel => {
         return new Promise((resolve, reject) => {
-            let result = entity.save();
+            let result = entityModel.save();
             resolve(result);
         });
     }
@@ -174,5 +174,29 @@ module.exports = class Repository {
             );
             resolve(deletedDocuments);
         });
+    }
+
+    /**
+     * Delete an filtered entity
+     * @important this function will delete permanently
+     * @param {*} filters 
+     */
+    deleteOneForever(filters) {
+        return new Promise(async (resolve, reject) => {
+            const result = await this.database.deleteOne(filters);
+            resolve(result);
+        });
+    }
+
+    /**
+     * Delete bunch filtered entity
+     * @important this function will delete permanently
+     * @param {*} filters 
+     */
+    deleteManyForever(filters) {
+        return new Promise(async (resolve, reject) => {
+            const result = this.database.deleteMany(filters);
+            resolve(result);
+        }); 
     }
 }

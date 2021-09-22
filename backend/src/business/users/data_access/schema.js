@@ -1,7 +1,7 @@
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const BaseSchema = require("../../../core/schema");
+const BaseSchema = require("../../../core/schema/BaseSchema");
 
 module.exports = class UserSchema extends BaseSchema {
     constructor(){

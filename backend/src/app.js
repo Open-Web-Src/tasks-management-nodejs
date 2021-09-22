@@ -2,7 +2,7 @@ const bodyParser = require('body-parser');
 const errorHandling = require('./core/middlewares/handling_error');
 const jwtVerifier = require('./core/middlewares/jwt_verification');
 const paginationAndSorting = require("./core/middlewares/pagination_and_sorting");
-const Application = require("./core/startup");
+const Application = require("./core/Application");
 const Router = require('./routes');
 
 const app = new Application();

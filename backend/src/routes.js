@@ -1,7 +1,7 @@
 const express = require("express");
 const UserRouter = require("./business/users/route");
 const TaskRouter = require("./business/tasks/route");
-const Repository = require("./core/repository");
+const Repository = require("./core/repository/Repository");
 const UserDatabase = require("./business/users/data_access/database");
 const UserController = require("./business/users/controller");
 const CreateUser = require("./business/users/use_cases/create_user");
@@ -21,7 +21,7 @@ const UpdateTaskById = require("./business/tasks/use_cases/update_task_by_id");
 const DeleteTaskById = require("./business/tasks/use_cases/delete_task_by_id");
 const AuthenticateMiddleware = require("./business/users/middlewares/authentication");
 const multer = require("multer");
-const SendGridMail = require("./core/emails/sendgrid_mail");
+const SendGridMail = require("./core/emails/SendGridMail");
 
 module.exports = class Router {
     constructor() {

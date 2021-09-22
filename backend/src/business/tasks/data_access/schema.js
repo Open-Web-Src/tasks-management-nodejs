@@ -1,4 +1,4 @@
-const BaseSchema = require("../../../core/schema");
+const BaseSchema = require("../../../core/schema/BaseSchema");
 const { ObjectId } = require("mongoose").Types;
 
 module.exports = class TaskSchema extends BaseSchema {

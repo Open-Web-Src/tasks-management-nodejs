@@ -1,9 +1,9 @@
 const express = require("express");
-const Database = require("./database");
+const Database = require("./database-connection/Database");
 
 module.exports = class Application extends express {
     constructor(){
-       super();
+        super();
     }
 
     registerDatabase = (connection) => {
@@ -16,8 +16,8 @@ module.exports = class Application extends express {
     
     registerHealthCheck = () => {
         try{
-            const healthRouter = express.Router();
-            this.route('/')
+            const healthRouter = Application.Router();
+            healthRouter.route('/healthCheck')
                 .get((req, res) => {
                     res.json({
                     status: {
